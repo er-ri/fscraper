@@ -146,3 +146,12 @@ def set_x_days_high_low(high: pd.Series, low: pd.Series, window: int):
         `df['3-day-high'], df['3-day-low'] = set_x_days_high_low(df['high'], df['low'], window=3)`
     """
     return high.rolling(window=window).max(), low.rolling(window=window).min()
+
+def calculate_obv(close: pd.Series, volume: pd.Series):
+    r"""
+    Description:
+        On Balance Volume (OBV)
+    Usage:
+        `df['OBV'] = fs.calculate_obv(df['close'], df['volume'])`
+    """
+    return (np.sign(close.diff()) * volume).fillna(0).cumsum()

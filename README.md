@@ -1,10 +1,13 @@
 # fscraper
-Financial Data Web Scraper
+Financial Data Scraper
 
 ## Introduction
 The project contains a collection of functions used to scrape financial data from the internet, mainly in Japan, and to calculate financial indicators such as *RSI*, *beta*, *MACD*, etc. Web scraping is implemented using `BeautifulSoup` and `requests` for the site that provides a RESTful API endpoint.
 
 ## Getting Started 
+### Installation
+    pip install fscraper
+
 ### Financial Data
 ```python
 import fscraper as fs
@@ -61,7 +64,7 @@ df['100-high'], df['100-low'] = fs.set_x_days_high_low(df['high'], df['low'], wi
 ```
 
 ## Contribution
-Any suggestions for improvement or contribution to this project are appreciated! 
+Any suggestions for improvement or contribution to this project are appreciated.
 
 ## Disclaimer
 The project is for informational and educational purposes only. The author assumes no responsibility or liability for any errors in the content of this project. 
