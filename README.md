@@ -14,7 +14,7 @@ import fscraper as fs
 
 # Yahoo Finance
 yfs = fs.YahooFinanceScraper('7203.T')
-df = yfs.get_stock_price(peroid='10y', interval='1d')
+df = yfs.get_stock_price(period='10y', interval='1d')
 df = yfs.get_stock_price2(start='2010-01-01', end='2020-12-12')
 
 df = yfs.get_statistics()
@@ -29,7 +29,7 @@ df = rs.get_cash_flow(period='annual')
 df = rs.get_cash_flow(period='interim')
 
 # Kabuyoho
-ks = fs.KabuyohoScraper('7203.T)
+ks = fs.KabuyohoScraper('7203.T')
 df = ks.get_report_top()
 df = ks.get_report_target()
 df = ks.get_target_price()
@@ -61,6 +61,9 @@ beta = fs.calculate_beta(code='6753.T', market='^N225', period='1y')
 
 # 100 days min&max price
 df['100-high'], df['100-low'] = fs.set_x_days_high_low(df['high'], df['low'], window=100)
+
+# On Balance Volume (OBV)
+df['OBV'] = fs.calculate_obv(df['close'], df['volume'])
 ```
 
 ## Contribution
