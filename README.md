@@ -33,6 +33,10 @@ ks = fs.KabuyohoScraper('7203.T')
 df = ks.get_report_top()
 df = ks.get_report_target()
 df = ks.get_target_price()
+
+# Kabutan
+kbs = fs.KabutanScraper('7203.T')
+df = kbs.get_stock_price_by_minutes()
 ```
 
 ### Indicator

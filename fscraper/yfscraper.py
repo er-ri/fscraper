@@ -47,9 +47,9 @@ class YahooFinanceScraper(object):
     def get_stock_price(self, period: str='1mo', interval: str='1d'):
         r"""
         Description:
-            Get history price 
+            Get historical price 
         Parameters:
-            range : str(`1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max`)
+            period : str(`1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max`)
             interval : str(`1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo`)
         """
         params = dict()
@@ -82,8 +82,8 @@ class YahooFinanceScraper(object):
     def __construct_price_dataframe(self, params):
         df = pd.DataFrame()
 
-        price_url = "https://query2.finance.yahoo.com/v8/finance/chart/{}".format(self.code)
-        html = requests.get(url=price_url, params=params, headers=scraper_headers).text
+        url = "https://query2.finance.yahoo.com/v8/finance/chart/{}".format(self.code)
+        html = requests.get(url=url, params=params, headers=scraper_headers).text
         price_json = json.loads(html)
 
         df['date'] = price_json['chart']['result'][0]['timestamp']
