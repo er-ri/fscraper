@@ -3,6 +3,7 @@ from .kabuyohoscraper import KabuyohoScraper
 from .kabutanscraper import KabutanScraper
 from .reuterscraper import ReutersScraper
 
+
 from .utils import (
     calculate_pearson_correlation,
     calculate_beta,

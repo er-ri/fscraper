@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime
 from io import StringIO
 
+
 class KabutanScraper(object):
     global scraper_headers
     scraper_headers = {
