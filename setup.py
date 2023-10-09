@@ -8,7 +8,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='fscraper',
-    version='1.0.2',
+    version='1.0.3',
     description='Financial Data Web Scraper',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -22,8 +22,10 @@ setup(
     ],
     python_requires='>=3.8',
     install_requires=[
-        'pandas',
-        'numpy',
-        'requests',
+        'pandas>=1.5.2',
+        'numpy>=1.23.5',
+        'requests>=2.28.1',
+        'beautifulsoup4>=4.12.2',
+        'lxml>=4.9.2',
     ],
 )
