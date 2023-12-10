@@ -4,7 +4,7 @@ import pandas as pd
 
 
 class ReutersScraper(object):
-    r"""
+    """
     JSON api interface('https://jp.reuters.com/companies/api/')
     """
 
@@ -53,38 +53,38 @@ class ReutersScraper(object):
 
     # Data factory
     def get_income_statement(self, period='annual'):
-        r"""
-        Description:
-            Generate income statement
-        Parameters:
-            period: str('annual' or 'interim')
-        Return:
-            pd.DataFrame
+        """Retrieve income statement
+
+        Args:
+            period(str): 'annual' or 'interim' income statement
+
+        Returns:
+            pd.DataFrame: income statement
         """
         df = self.__extract_financial_statement('income', period)
 
         return df
 
     def get_balance_sheet(self, period='annual'):
-        r"""
-        Description:
-            Generate balance sheet
-        Parameters:
-            period: str(`annual` or `interim`)
-        Return:
-            pd.DataFrame
+        """Retrieve balance sheet
+
+        Args:
+            period(str): 'annual' or 'interim' blance sheet
+
+        Returns:
+            pd.DataFrame: balance sheet
         """
         df = self.__extract_financial_statement('balance_sheet', period)
         return df
 
     def get_cash_flow(self, period='annual'):
-        r"""
-        Description:
-            Get cash flow
-        Parameters:
-            period: str(`annual` or `interim`)
-        Return:
-            pd.DataFrame
+        """Get cash flow
+
+        Args:
+            period(str): 'annual' or 'interim' cash flow
+
+        Returns:
+            pd.DataFrame: cash flow
         """
         df = self.__extract_financial_statement('cash_flow', period)
         return df

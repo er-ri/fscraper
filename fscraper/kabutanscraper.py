@@ -16,10 +16,7 @@ class KabutanScraper(object):
         self.code = code.upper().replace('.T', '')
 
     def get_stock_price_by_minutes(self):
-        r"""
-        Description:
-            Get stock price by minute
-        """
+        """Get stock price by minute"""
         url = "https://kabutan.jp/stock/read?c={}&m=4&k=1&{}=".format(self.code, int(time.time() * 1000))
         html = requests.get(url=url, headers=scraper_headers).text
         csvStringIO = StringIO(html)
