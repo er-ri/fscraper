@@ -1,8 +1,8 @@
-# fscraper
+# FSCRAPER
 Financial Data Scraper
 
 ## Introduction
-The project contains a collection of functions used to scrape financial data from the internet, mainly in Japan, and to calculate financial indicators such as *RSI*, *beta*, *MACD*, etc. Web scraping is implemented using `BeautifulSoup` and `requests` for the site that provides a RESTful API endpoint.
+The project contains a collection of functions used to scrape financial data, together with financial indicators calculator such as *RSI*, *beta*, *MACD*, etc. Web scraping is implemented using `BeautifulSoup` and `requests` for the site that provided RESTful API endpoint.
 
 ## Getting Started 
 ### Installation
@@ -37,6 +37,10 @@ df = ks.get_target_price()
 # Kabutan
 kbs = fs.KabutanScraper('7203.T')
 df = kbs.get_stock_price_by_minutes()
+
+# Minkabu
+ms = fs.MinkabuScraper('7203.T')
+df = ms.get_analysis()
 ```
 
 ### Indicator

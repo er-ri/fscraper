@@ -56,12 +56,14 @@ class YahooFinanceScraper(object):
         return df.transpose()
 
     def get_stock_price(self, period: str = '1mo', interval: str = '1d'):
-        r"""
-        Description:
-            Get historical price 
-        Parameters:
-            period : str(`1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max`)
-            interval : str(`1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo`)
+        """Get historical price 
+
+        Args:
+            period(str): `1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max`
+            interval(str): `1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo`
+
+        Returns:
+            pd.DataFrame: stock price
         """
         params = dict()
         params['range'] = period
@@ -73,13 +75,15 @@ class YahooFinanceScraper(object):
         return df
 
     def get_stock_price2(self, start: str = '', end: str = date.today().strftime('%Y-%m-%d'), interval: str = '1d'):
-        r"""
-        Description:
-            Get history price with specified date. 
-        Parameters:
-            start: str(`yyyy-mm-dd`)
-            end: str(`yyyy-mm-dd`)
-            interval : str(`1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo`)
+        """Get history price with specified date. 
+
+        Args:
+            start(str): start date, format `yyyy-mm-dd`
+            end(str): end date, format `yyyy-mm-dd`
+            interval(str): `1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo`
+
+        Returns:
+            pd.DataFrame: stock price
         """
         params = dict()
         params['period1'] = int(datetime.strptime(
@@ -110,7 +114,7 @@ class YahooFinanceScraper(object):
 
         # Add dividends if exists.
         try:
-            for key, item in price_json['chart']['result'][0]['events']['dividends'].items():
+            for _, item in price_json['chart']['result'][0]['events']['dividends'].items():
                 df.loc[df['date'] == item['date'],
                        'dividends'] = item['amount']
         except KeyError as e:

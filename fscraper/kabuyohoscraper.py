@@ -42,12 +42,15 @@ class KabuyohoScraper(object):
             raw_data = raw_data.replace(unicode, '')
         return raw_data
 
+    @classmethod
     def __scrape_report_target(cls, url):
-        r"""
-        Description:
-            Scrape the specific url
-        Return:
-            A dom Object(etree.ElementTree)
+        """Scrape the specific url
+
+        Args:
+            url(str): kabuyoho url
+
+        Returns:
+            etree.ElementTree: dom object
         """
         scraper_headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0',
@@ -106,9 +109,10 @@ class KabuyohoScraper(object):
         return df.transpose()
 
     def get_report_target(self):
-        r"""
-        Description:
-            Get report from '/sp/reportTarget'.
+        """Get report from '/sp/reportTarget'
+
+        Returns:
+            pd.DataFrame: kabuyoho report page info
         """
         dom = self.__get_report_target_dom()
 
@@ -181,11 +185,10 @@ class KabuyohoScraper(object):
         return df.transpose()
 
     def get_target_price(self):
-        r"""
-        Description:
-            Get theory PB/R and PE/R market price from sbisec API.("https://img-sec.ifis.co.jp")
-            The fastest way.    
-        Return: DataFrame
+        """Get theory PB/R and PE/R market price from sbisec API.("https://img-sec.ifis.co.jp")
+
+        Returns: 
+            pd.DataFrame: target price
         """
         # `Request` without `Referer`` paramter will be blocked by the website.
         scraper_headers = {
