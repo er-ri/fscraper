@@ -2,7 +2,7 @@ from .yfscraper import YahooFinanceScraper
 from .kabuyohoscraper import KabuyohoScraper
 from .kabutanscraper import KabutanScraper
 from .reuterscraper import ReutersScraper
-
+from .minkabuscraper import MinkabuScraper
 
 from .utils import (
     calculate_pearson_correlation,

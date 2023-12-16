@@ -42,6 +42,7 @@ class KabuyohoScraper(object):
             raw_data = raw_data.replace(unicode, '')
         return raw_data
 
+    @classmethod
     def __scrape_report_target(cls, url):
         """Scrape the specific url
 
