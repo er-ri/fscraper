@@ -6,6 +6,7 @@ from datetime import date, datetime
 from bs4 import BeautifulSoup
 from lxml import etree
 from .xpath_table import yahoo_xpath
+from .exceptions import CodeNotFoundException
 
 
 class YahooFinanceScraper(object):
@@ -104,6 +105,10 @@ class YahooFinanceScraper(object):
                             headers=scraper_headers).text
         price_json = json.loads(html)
 
+        if 'error' in price_json['chart']:
+            raise CodeNotFoundException(self.code, json.loads(html)[
+                                        'chart']['error']['description'])
+
         df['date'] = price_json['chart']['result'][0]['timestamp']
         df['open'] = price_json['chart']['result'][0]['indicators']['quote'][0]['open']
         df['high'] = price_json['chart']['result'][0]['indicators']['quote'][0]['high']
@@ -119,7 +124,6 @@ class YahooFinanceScraper(object):
                        'dividends'] = item['amount']
         except KeyError as e:
             df['dividends'] = np.nan
-            pass
 
         df['date'] = df['date'].apply(lambda d: datetime.fromtimestamp(
             int(d)).strftime("%Y-%m-%d %H:%M:%S"))
