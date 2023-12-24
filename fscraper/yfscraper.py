@@ -105,7 +105,7 @@ class YahooFinanceScraper(object):
                             headers=scraper_headers).text
         price_json = json.loads(html)
 
-        if 'error' in price_json['chart']:
+        if price_json['chart']['error'] is not None:
             raise CodeNotFoundException(self.code, json.loads(html)[
                                         'chart']['error']['description'])
 
