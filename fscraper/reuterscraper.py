@@ -1,6 +1,7 @@
 import json
 import requests
 import pandas as pd
+from .exceptions import NoArticleFoundException
 
 
 class ReutersScraper(object):
@@ -28,6 +29,18 @@ class ReutersScraper(object):
         except Exception as e:
             data = None
         return data
+
+    def __extract_financial_statement(self, type, period):
+        df = pd.DataFrame()
+        raw_json = self.get_financials(
+        )['market_data']['financial_statements'][type][period]
+
+        for key in raw_json:
+            df_ext = pd.DataFrame(raw_json[key])
+            df_ext = df_ext.rename(columns={'value': key}).set_index('date')
+            df = pd.concat([df, df_ext], axis=1)
+
+        return df
 
     # Data retrieved from 'jp.reuters.com' API.
     def get_key_metrics(self):
@@ -89,14 +102,21 @@ class ReutersScraper(object):
         df = self.__extract_financial_statement('cash_flow', period)
         return df
 
-    def __extract_financial_statement(self, type, period):
-        df = pd.DataFrame()
-        raw_json = self.get_financials(
-        )['market_data']['financial_statements'][type][period]
+    def get_news(self, keyword, size):
+        params = {
+            'query': f'{{"keyword":"{keyword}","offset":0,"orderby":"display_date:desc","size":{size},"website":"reuters-japan"}}',
+            'd': '168',
+            '_website': 'reuters-japan',
+        }
 
-        for key in raw_json:
-            df_ext = pd.DataFrame(raw_json[key])
-            df_ext = df_ext.rename(columns={'value': key}).set_index('date')
-            df = pd.concat([df, df_ext], axis=1)
+        response = requests.get(
+            'https://jp.reuters.com/pf/api/v3/content/fetch/articles-by-search-v2',
+            params=params,
+            headers=__scraper_headers,
+        )
 
-        return df
+        if response.json()['result']['pagination']['size'] < 1:
+            raise NoArticleFoundException(
+                f"No article was found with the keyword: {keyword}")
+
+        return response.json()['result']['articles']

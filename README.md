@@ -27,6 +27,7 @@ df = rs.get_balance_sheet(period='annual')
 df = rs.get_balance_sheet(period='interim')
 df = rs.get_cash_flow(period='annual')
 df = rs.get_cash_flow(period='interim')
+news = rs.get_news(keyword='7203.T', size=5)
 
 # Kabuyoho
 ks = fs.KabuyohoScraper('7203.T')
