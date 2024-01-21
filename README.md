@@ -42,6 +42,8 @@ df = kbs.get_stock_price_by_minutes()
 # Minkabu
 ms = fs.MinkabuScraper('7203.T')
 df = ms.get_analysis()
+queries = ms.query_news()
+news_list = ms.get_news_list(queries)
 ```
 
 ### Indicator

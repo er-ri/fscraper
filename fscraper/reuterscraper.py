@@ -22,7 +22,8 @@ class ReutersScraper(object):
         self.__raw_financials = dict()
         self.__raw_event = dict()
 
-    def __scrape_data(cls, url):
+    @staticmethod
+    def __scrape_data(url):
         try:
             resp = requests.get(url=url, headers=__scraper_headers).text
             data = json.loads(resp)

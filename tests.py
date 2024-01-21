@@ -1,3 +1,4 @@
+import time
 import unittest
 import fscraper as fs
 from fscraper.exceptions import CodeNotFoundException, NoArticleFoundException
@@ -36,6 +37,19 @@ class TestMethods(unittest.TestCase):
         with self.assertRaises(NoArticleFoundException):
             rs.get_news(keyword, 5)
 
+    def test_reuter_financial_report(self):
+        rs = fs.ReutersScraper('7203.T')
+        report = rs.get_financials()
+
+        self.assertEqual(len(report), 10)
+
+    def test_minkabu_news_list(self):
+        ms = fs.MinkabuScraper('7203.T')
+        queries = ms.query_news()
+        time.sleep(2)
+        news_list = ms.get_news_list(queries[:3])
+
+        self.assertEqual(len(news_list), 3)
 
 if __name__ == '__main__':
     unittest.main()
