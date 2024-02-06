@@ -90,8 +90,8 @@ class MinkabuScraper:
         """Get news content
 
         Args:
-            queries(list): news list retrieve from `query_news()`
-            sleep(int): interval between scraping
+            queries(list): news list retrieved from `query_news()`
+            sleep(int): interval between data scraping(unit: second)
 
         Returns:
             list: news, length is same as the queries

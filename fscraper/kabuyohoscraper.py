@@ -6,7 +6,10 @@ import pandas as pd
 from datetime import date
 from bs4 import BeautifulSoup
 from lxml import etree
-from .xpath_table import kabuyoho_top_xpath, kabuyoho_target_xpath
+from .constant_table import (
+    KABUYOHO_TOP_XPATH,
+    KABUYOHO_TARGET_XPATH
+)
 
 
 class KabuyohoScraper(object):
@@ -67,30 +70,30 @@ class KabuyohoScraper(object):
 
         # Scrape Data
         ticker_code = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Ticker'])
+            dom, KABUYOHO_TOP_XPATH['Ticker'])
         company = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Compnay'])
+            dom, KABUYOHO_TOP_XPATH['Compnay'])
         industry = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Industry'])
-        report_date = dom.xpath(kabuyoho_top_xpath['Report Date'])[
+            dom, KABUYOHO_TOP_XPATH['Industry'])
+        report_date = dom.xpath(KABUYOHO_TOP_XPATH['Report Date'])[
             0].text[1:6] + '/' + str(date.today().year)
         status = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Accounting Status'])
+            dom, KABUYOHO_TOP_XPATH['Accounting Status'])
         price = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Price'])
+            dom, KABUYOHO_TOP_XPATH['Price'])
 
         dividend_yield = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Dividend Yield(%)'])
+            dom, KABUYOHO_TOP_XPATH['Dividend Yield(%)'])
         target_price = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Target Price'])
+            dom, KABUYOHO_TOP_XPATH['Target Price'])
         pbr_level = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['PBR Level'])
+            dom, KABUYOHO_TOP_XPATH['PBR Level'])
         per_level = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['PER Level'])
+            dom, KABUYOHO_TOP_XPATH['PER Level'])
         trend_signal = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Trend'])
+            dom, KABUYOHO_TOP_XPATH['Trend'])
         risk_index = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_top_xpath['Risk Index'])
+            dom, KABUYOHO_TOP_XPATH['Risk Index'])
 
         df = pd.DataFrame(index=range(1))
         df.insert(len(df.columns), 'Ticker', ticker_code)
@@ -117,45 +120,45 @@ class KabuyohoScraper(object):
         dom = self.__get_report_target_dom()
 
         ticker_code = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Ticker'])
+            dom, KABUYOHO_TARGET_XPATH['Ticker'])
         company = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Compnay'])
-        report_date = dom.xpath(kabuyoho_target_xpath['Report Date'])[
+            dom, KABUYOHO_TARGET_XPATH['Compnay'])
+        report_date = dom.xpath(KABUYOHO_TARGET_XPATH['Report Date'])[
             0].text[1:6] + '/' + str(date.today().year)
         price = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Price'])
+            dom, KABUYOHO_TARGET_XPATH['Price'])
         book_value_per_share = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['BVPS'])
+            dom, KABUYOHO_TARGET_XPATH['BVPS'])
         company_eps = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['EPS(Company)'])
+            dom, KABUYOHO_TARGET_XPATH['EPS(Company)'])
         analyst_eps = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['EPS(Analyst)'])
+            dom, KABUYOHO_TARGET_XPATH['EPS(Analyst)'])
         pbr = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['P/B Ratio'])
+            dom, KABUYOHO_TARGET_XPATH['P/B Ratio'])
         company_per = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['P/E Ratio(Company)'])
+            dom, KABUYOHO_TARGET_XPATH['P/E Ratio(Company)'])
         analyst_per = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['P/E Ratio(Analyst)'])
+            dom, KABUYOHO_TARGET_XPATH['P/E Ratio(Analyst)'])
 
         analyst_price_target = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Target Price'])
+            dom, KABUYOHO_TARGET_XPATH['Target Price'])
         analyst_trend_point = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Trend Point'])
+            dom, KABUYOHO_TARGET_XPATH['Trend Point'])
         analyst_numbers = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Analyst Numbers'])
+            dom, KABUYOHO_TARGET_XPATH['Analyst Numbers'])
 
         theory_pbr_price = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Theory PBR Price'])
+            dom, KABUYOHO_TARGET_XPATH['Theory PBR Price'])
         theory_pbr_price_high = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Theory PBR Price(High)'])
+            dom, KABUYOHO_TARGET_XPATH['Theory PBR Price(High)'])
         theory_pbr_price_low = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Theory PBR Price(Low)'])
+            dom, KABUYOHO_TARGET_XPATH['Theory PBR Price(Low)'])
         theory_per_price = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Theory PER Price'])
+            dom, KABUYOHO_TARGET_XPATH['Theory PER Price'])
         theory_per_price_high = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Theory PER Price(High)'])
+            dom, KABUYOHO_TARGET_XPATH['Theory PER Price(High)'])
         theory_per_price_low = KabuyohoScraper.__get_raw_data__(
-            dom, kabuyoho_target_xpath['Theory PER Price(Low)'])
+            dom, KABUYOHO_TARGET_XPATH['Theory PER Price(Low)'])
 
         df = pd.DataFrame(index=range(1))
         df.insert(len(df.columns), 'Ticker', ticker_code)

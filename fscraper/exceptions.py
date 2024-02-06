@@ -1,4 +1,4 @@
-class CodeNotFoundException(Exception):
+class CodeNotFound(Exception):
     """YahooFinanceScraper: Raised when the code was not listed"""
 
     def __init__(self, code, message):
@@ -6,8 +6,22 @@ class CodeNotFoundException(Exception):
         self.message = message
 
 
-class NoArticleFoundException(Exception):
-    """ReutersScraper: Raised when no article was fetched for news scraper"""
+class InvalidFinancialReport(Exception):
+    """YahooFinanceScraper: Raised when the requested report is invalid"""
 
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, report):
+        self.message = f"Valid reports are 'incomestatement', 'balancesheet' and 'cashflow', but {report} received."
+
+
+class InvalidFinancialType(Exception):
+    """YahooFinanceScraper: Raised when the requested report type is invalid"""
+
+    def __init__(self, type):
+        self.message = f"Valid report types are 'quarterly' and 'annual', but {type} received."
+
+
+class ReutersServerException(Exception):
+    """ReutersScraper: Raised when no response from reuters.jp"""
+
+    def __init__(self, error):
+        self.message = f"Failed to request: {error}"

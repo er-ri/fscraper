@@ -1,4 +1,4 @@
-yahoo_xpath = {
+YAHOO_XPATH = {
     "Market Cap (intraday)": "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/section/div[2]/div[1]/div/div/div/div/table/tbody/tr[1]/td[2]",
     "Enterprise Value": "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/section/div[2]/div[1]/div/div/div/div/table/tbody/tr[2]/td[2]",
     "Trailing P/E": "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/section/div[2]/div[1]/div/div/div/div/table/tbody/tr[3]/td[2]",
@@ -10,7 +10,8 @@ yahoo_xpath = {
     "Enterprise Value/EBITDA": "/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/section/div[2]/div[1]/div/div/div/div/table/tbody/tr[9]/td[2]"
 }
 
-kabuyoho_top_xpath = {
+
+KABUYOHO_TOP_XPATH = {
     "Ticker": "/html/body/div[1]/main/div[1]/div[1]/ul/li[2]",
     "Compnay": "/html/body/div[1]/main/div[1]/div[1]/ul/li[1]",
     "Industry": "/html/body/div[1]/main/section[1]/div[1]/div[2]/h2",
@@ -25,7 +26,8 @@ kabuyoho_top_xpath = {
     "Risk Index": "/html/body/div[1]/main/section[2]/div[3]/div[2]/div/div/div[2]/dl/dd"
 }
 
-kabuyoho_target_xpath = {
+
+KABUYOHO_TARGET_XPATH = {
     "Ticker": "/html/body/header/div/div[3]/div[1]/ul/li[2]",
     "Compnay": "/html/body/div[1]/main/div[1]/div[1]/ul/li[1]",
     "Report Date": "/html/body/header/div/div[3]/div[2]/ul/li[1]/p[1]/em",
@@ -45,4 +47,20 @@ kabuyoho_target_xpath = {
     "Theory PER Price": "/html/body/div[1]/main/section[4]/div/section[2]/div/table/tbody/tr[5]/td/span[1]",
     "Theory PER Price(High)": "/html/body/div[1]/main/section[4]/div/section[2]/div/table/tbody/tr[6]/td/span[1]",
     "Theory PER Price(Low)": "/html/body/div[1]/main/section[4]/div/section[2]/div/table/tbody/tr[7]/td/span[1]"
+}
+
+# Yahoo! Finance
+INCOME_STATEMENT_ITEMS = ['TotalRevenue', 'OperatingIncome', 'PretaxIncome',
+                          'NetIncome', 'BasicEPS']
+
+BALANCE_SHEET_ITEMS = ['TotalAssets', 'TotalEquityGrossMinorityInterest',
+                       'CommonStockEquity', 'RetainedEarnings', 'ShareIssued']
+
+CASH_FLOW_ITEMS = ['OperatingCashFlow', 'InvestingCashFlow', 'FinancingCashFlow',
+                   'EndCashPosition', 'CapitalExpenditure', 'FreeCashFlow']
+
+REPORT_TABLE = {
+    "incomestatement": INCOME_STATEMENT_ITEMS,
+    "balancesheet": BALANCE_SHEET_ITEMS,
+    'cashflow': CASH_FLOW_ITEMS
 }

@@ -4,13 +4,12 @@ import pandas as pd
 from datetime import datetime
 from io import StringIO
 
-
-class KabutanScraper(object):
-    global scraper_headers
-    scraper_headers = {
+headers = {
         'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0',
         'Cache-Control': 'no-cache, max-age=0'
     }
+
+class KabutanScraper(object):
 
     def __init__(self, code):
         self.code = code.upper().replace('.T', '')
@@ -18,7 +17,7 @@ class KabutanScraper(object):
     def get_stock_price_by_minutes(self):
         """Get stock price by minute"""
         url = "https://kabutan.jp/stock/read?c={}&m=4&k=1&{}=".format(self.code, int(time.time() * 1000))
-        html = requests.get(url=url, headers=scraper_headers).text
+        html = requests.get(url=url, headers=headers).text
         csvStringIO = StringIO(html)
         df = pd.read_csv(csvStringIO, sep=",", header=None)
         

@@ -13,8 +13,3 @@ from .utils import (
     calculate_macd,
     set_x_days_high_low
 )
-
-from .xpath_table import (
-    yahoo_xpath,
-    kabuyoho_top_xpath
-)
