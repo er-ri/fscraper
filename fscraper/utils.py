@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from .yfscraper import YahooFinanceScraper
+from datetime import datetime
 
 
 def calculate_pearson_correlation(price1: pd.Series, price2: pd.Series):
@@ -21,35 +21,35 @@ def calculate_pearson_correlation(price1: pd.Series, price2: pd.Series):
     return np.corrcoef(x, y)[1, 0]
 
 
-def calculate_beta(code: str, market: str = '^N225', period: str = '1y'):
+def calculate_beta(stock, index, start='1985-01-01', end=datetime.now().strftime('%Y-%m-%d')):
     """Calculate the 'beta' with the given ticker code with the specific period using Yahoo Finance API.
 
     Args:
-        code(str): ticker symbol(e.g. '7203.T')
-        period(str): beta of period (e.g. '1d', '1mo'...)
+        stock(pd.Series): stock value
+        index(pd.Series): benchmark index('Nikkei 225': '^N225', 'S&P 500': '^SPX')
+        start(str): start time period(format: 'yyyy-mm-dd')
+        end(str): end time period(format: 'yyyy-mm-dd')
 
     Returns:
         float64: beta
 
     Usage:
-        `beta = calculate_beta('6753.T', '1y')`
+        `beta = calculate_beta(stock, index, '2020-01-01', '2024-01-01')`
     """
-    stock1 = YahooFinanceScraper(code)
-    stock2 = YahooFinanceScraper(market)
-
-    df1 = stock1.get_stock_price(period, '1d')
-    df2 = stock2.get_stock_price(period, '1d')
-
-    df = pd.concat([df1['close'], df2['close']], axis=1,
-                   join='outer', keys=[code, market])
-
     # Daily returns (percentage returns[`df.pct_change()`] or log returns[`np.log(df/df.shift(1))`])
-    daily_returns = df.pct_change()
+    stock_returns = stock.pct_change()
+    index_returns = index.pct_change()
 
-    cov = daily_returns.cov()[market][code]
-    var = daily_returns.var()[market]
+    df = pd.concat([stock_returns, index_returns], axis=1,
+                   join='outer', keys=['Stock Returns', 'Index Returns'])
 
-    daily_returns = daily_returns.dropna()
+    df = df.loc[(df.index > start) & (df.index < end)].dropna()
+
+    cov_matrix = df.cov()
+
+    cov = cov_matrix.loc['Stock Returns', 'Index Returns']
+    var = cov_matrix.loc['Index Returns', 'Index Returns']
+
     return cov/var
 
 
