@@ -1,18 +1,19 @@
 import json
 import requests
 import pandas as pd
-from .exceptions import NoArticleFoundException
+from requests.exceptions import HTTPError
+from .exceptions import ReutersServerException
+
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0'
+}
 
 
 class ReutersScraper(object):
     """
     JSON api interface('https://jp.reuters.com/companies/api/')
     """
-
-    global __scraper_headers
-    __scraper_headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0'
-    }
 
     def __init__(self, code):
         self.__code = code
@@ -25,7 +26,7 @@ class ReutersScraper(object):
     @staticmethod
     def __scrape_data(url):
         try:
-            resp = requests.get(url=url, headers=__scraper_headers).text
+            resp = requests.get(url=url, headers=headers).text
             data = json.loads(resp)
         except Exception as e:
             data = None
@@ -103,21 +104,25 @@ class ReutersScraper(object):
         df = self.__extract_financial_statement('cash_flow', period)
         return df
 
-    def get_news(self, keyword, size):
+    @staticmethod
+    def get_news(keyword, size):
         params = {
             'query': f'{{"keyword":"{keyword}","offset":0,"orderby":"display_date:desc","size":{size},"website":"reuters-japan"}}',
-            'd': '168',
+            'd': '175',
             '_website': 'reuters-japan',
         }
 
-        response = requests.get(
-            'https://jp.reuters.com/pf/api/v3/content/fetch/articles-by-search-v2',
-            params=params,
-            headers=__scraper_headers,
-        )
+        try:
+            response = requests.get(
+                'https://jp.reuters.com/pf/api/v3/content/fetch/articles-by-search-v2',
+                params=params,
+                headers=headers,
+            )
+            response.raise_for_status()
+        except HTTPError as e:
+            raise ReutersServerException(e)
 
-        if response.json()['result']['pagination']['size'] < 1:
-            raise NoArticleFoundException(
-                f"No article was found with the keyword: {keyword}")
+        raw = response.json()
+        size = raw['result']['pagination']['size']
 
-        return response.json()['result']['articles']
+        return raw['result']['articles'] if size > 0 else list()
