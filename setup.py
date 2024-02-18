@@ -8,7 +8,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='fscraper',
-    version='1.0.8',
+    version='1.0.9',
     description='Financial Data Web Scraper',
     long_description=long_description,
     long_description_content_type='text/markdown',
