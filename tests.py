@@ -41,7 +41,7 @@ class TestMethods(unittest.TestCase):
 
     def test_yfscraper_report(self):
         yf = fs.YahooFinanceScraper('7203.T')
-        df = yf.get_financials('cashflow', 'annual')
+        df = yf.get_financials('balancesheet', 'annual')
         self.assertGreater(len(df), 0)
 
 

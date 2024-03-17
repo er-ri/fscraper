@@ -59,14 +59,11 @@ class MinkabuScraper:
         df = df.set_index('date')
         return df
 
-    def query_news(self):
-        """Get the news list from minkabu
-
-        Args:
-            code(str): ticker symbol code
+    def get_news_abstract(self):
+        """Get the news abstract from minkabu
 
         Returns:
-            list: news list
+            list: news abstract
         """
         url = f"https://minkabu.jp/stock/{self.code}/news"
 
@@ -86,7 +83,7 @@ class MinkabuScraper:
 
         return queries
 
-    def get_news_list(self, queries, sleep=2):
+    def get_news_contents(self, queries, sleep=2):
         """Get news content
 
         Args:

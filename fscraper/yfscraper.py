@@ -12,7 +12,7 @@ from .constant_table import (
 from .exceptions import (
     CodeNotFound,
     InvalidFinancialReport,
-    InvalidFinancialType
+    InvalidFinancialReportType
 )
 
 headers = {
@@ -62,12 +62,12 @@ class YahooFinanceScraper(object):
 
         return df.transpose()
 
-    def get_financials(self, report, type):
+    def get_financials(self, report, report_type):
         """Scrape Yahoo!Finance financial report
 
         Args:
             report(str): 'incomestatement' | 'balancesheet' | 'cashflow'
-            type(str): 'quarterly' | 'annual'
+            quarterly(): 'quarterly' | 'annual'
 
         Returns:
             pd.DataFrame: corresponding report
@@ -75,11 +75,11 @@ class YahooFinanceScraper(object):
         # Accepted arguments check
         if report not in REPORT_TABLE.keys():
             raise InvalidFinancialReport(report=report)
-        if type not in ['quarterly', 'annual']:
-            raise InvalidFinancialType(type=type)
+        if report_type not in ['quarterly', 'annual']:
+            raise InvalidFinancialReportType(type=report_type)
 
         items = REPORT_TABLE[report]
-        items = [type + item for item in items]
+        items = [report_type + item for item in items]
 
         params = {
             'lang': 'en-US',

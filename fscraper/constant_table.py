@@ -54,7 +54,8 @@ INCOME_STATEMENT_ITEMS = ['TotalRevenue', 'OperatingIncome', 'PretaxIncome',
                           'NetIncome', 'BasicEPS']
 
 BALANCE_SHEET_ITEMS = ['TotalAssets', 'TotalEquityGrossMinorityInterest',
-                       'CommonStockEquity', 'RetainedEarnings', 'ShareIssued']
+                       'StockholdersEquity', 'RetainedEarnings', 'ShareIssued', 'OrdinarySharesNumber',
+                       'TreasurySharesNumber']
 
 CASH_FLOW_ITEMS = ['OperatingCashFlow', 'InvestingCashFlow', 'FinancingCashFlow',
                    'EndCashPosition', 'CapitalExpenditure', 'FreeCashFlow']

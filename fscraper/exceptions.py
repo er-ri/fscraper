@@ -13,11 +13,11 @@ class InvalidFinancialReport(Exception):
         self.message = f"Valid reports are 'incomestatement', 'balancesheet' and 'cashflow', but {report} received."
 
 
-class InvalidFinancialType(Exception):
+class InvalidFinancialReportType(Exception):
     """YahooFinanceScraper: Raised when the requested report type is invalid"""
 
-    def __init__(self, type):
-        self.message = f"Valid report types are 'quarterly' and 'annual', but {type} received."
+    def __init__(self, report_type):
+        self.message = f"Valid report types are 'quarterly' and 'annual', but {report_type} received."
 
 
 class ReutersServerException(Exception):
