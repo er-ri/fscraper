@@ -8,7 +8,7 @@ headers = {
 }
 
 
-class MinkabuScraper:
+class MinkabuScraper(object):
     """Minkabu Scraper from https://minkabu.jp/
 
     Attributes:
@@ -57,6 +57,7 @@ class MinkabuScraper:
         df['usdjpy'] = pd.to_numeric(raw_json['usdjpy']['closes'])
 
         df = df.set_index('date')
+        
         return df
 
     def get_news_abstract(self):

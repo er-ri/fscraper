@@ -2,11 +2,8 @@ import json
 import requests
 import pandas as pd
 import numpy as np
-from lxml import etree
-from bs4 import BeautifulSoup
 from datetime import datetime
 from .constant_table import (   
-    YAHOO_XPATH,
     REPORT_TABLE
 )
 from .exceptions import (
@@ -28,39 +25,6 @@ class YahooFinanceScraper(object):
         self._session = requests.Session()
         self._statistics_dom = None
 
-    def __get_dom(self, url):
-        html = self._session.get(url=url, headers=headers).text
-        soup = BeautifulSoup(html, "html.parser")
-        dom = etree.HTML(str(soup))
-        return dom
-
-    def get_statistics(self):
-        url = "https://finance.yahoo.com/quote/{}/key-statistics?p={}".format(
-            self.code, self.code)
-        self._statistics_dom = self.__get_dom(
-            url=url) if self._statistics_dom is None else self._statistics_dom
-
-        df = pd.DataFrame(index=range(1))
-        df.insert(len(df.columns), 'Market Cap (intraday)', self._statistics_dom.xpath(
-            YAHOO_XPATH['Market Cap (intraday)'])[0].text)
-        df.insert(len(df.columns), 'Enterprise Value', self._statistics_dom.xpath(
-            YAHOO_XPATH['Enterprise Value'])[0].text)
-        df.insert(len(df.columns), 'Trailing P/E',
-                  self._statistics_dom.xpath(YAHOO_XPATH['Trailing P/E'])[0].text)
-        df.insert(len(df.columns), 'Forward P/E',
-                  self._statistics_dom.xpath(YAHOO_XPATH['Forward P/E'])[0].text)
-        df.insert(len(df.columns), 'PEG Ratio (5 yr expected)', self._statistics_dom.xpath(
-            YAHOO_XPATH['PEG Ratio (5 yr expected)'])[0].text)
-        df.insert(len(df.columns), 'Price/Sales (ttm)',
-                  self._statistics_dom.xpath(YAHOO_XPATH['Price/Sales (ttm)'])[0].text)
-        df.insert(len(df.columns), 'Price/Book (mrq)',
-                  self._statistics_dom.xpath(YAHOO_XPATH['Price/Book (mrq)'])[0].text)
-        df.insert(len(df.columns), 'Enterprise Value/Revenue',
-                  self._statistics_dom.xpath(YAHOO_XPATH['Enterprise Value/Revenue'])[0].text)
-        df.insert(len(df.columns), 'Enterprise Value/EBITDA',
-                  self._statistics_dom.xpath(YAHOO_XPATH['Enterprise Value/EBITDA'])[0].text)
-
-        return df.transpose()
 
     def get_financials(self, report, report_type):
         """Scrape Yahoo!Finance financial report

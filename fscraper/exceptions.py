@@ -19,9 +19,3 @@ class InvalidFinancialReportType(Exception):
     def __init__(self, report_type):
         self.message = f"Valid report types are 'quarterly' and 'annual', but {report_type} received."
 
-
-class ReutersServerException(Exception):
-    """ReutersScraper: Raised when no response from reuters.jp"""
-
-    def __init__(self, error):
-        self.message = f"Failed to request: {error}"

@@ -1,7 +1,6 @@
 from .yfscraper import YahooFinanceScraper
 from .kabuyohoscraper import KabuyohoScraper
 from .kabutanscraper import KabutanScraper
-from .reuterscraper import ReutersScraper
 from .minkabuscraper import MinkabuScraper
 
 from .utils import (
@@ -11,5 +10,5 @@ from .utils import (
     calculate_stochastic_oscillator,
     calculate_bollinger_bands,
     calculate_macd,
-    set_x_days_high_low
+    get_x_days_high_low
 )

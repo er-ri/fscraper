@@ -43,4 +43,5 @@ class KabutanScraper(object):
 
         df = df.sort_values(by=['date'])
         df = df.set_index('date')
+        
         return df
