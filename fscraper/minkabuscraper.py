@@ -1,8 +1,14 @@
+import time
 import requests
 import pandas as pd
+from bs4 import BeautifulSoup
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:107.0) Gecko/20100101 Firefox/107.0',
+}
 
 
-class MinkabuScraper:
+class MinkabuScraper(object):
     """Minkabu Scraper from https://minkabu.jp/
 
     Attributes:
@@ -32,8 +38,7 @@ class MinkabuScraper:
             'Sec-Fetch-Site': 'same-site',
         }
 
-        url = 'https://assets.minkabu.jp/jsons/stock-jam/stocks/{code}/lump.json'.format(
-            code=self.code)
+        url = f"https://assets.minkabu.jp/jsons/stock-jam/stocks/{self.code}/lump.json"
 
         raw_json = requests.get(url, headers=headers).json()
 
@@ -52,4 +57,67 @@ class MinkabuScraper:
         df['usdjpy'] = pd.to_numeric(raw_json['usdjpy']['closes'])
 
         df = df.set_index('date')
+        
         return df
+
+    def get_news_abstract(self):
+        """Get the news abstract from minkabu
+
+        Returns:
+            list: news abstract
+        """
+        url = f"https://minkabu.jp/stock/{self.code}/news"
+
+        response = requests.get(url, headers=headers)
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        cells = soup.select("div[class='cell']")
+
+        queries = list()
+        for cell in cells[1:]:
+            query = dict()
+            box = cell.find("a", href=True)
+            query['id'] = box['href'][17:]
+            query['href'] = box['href']
+            query['description'] = box.text
+            queries.append(query)
+
+        return queries
+
+    def get_news_contents(self, queries, sleep=2):
+        """Get news content
+
+        Args:
+            queries(list): news list retrieved from `query_news()`
+            sleep(int): interval between data scraping(unit: second)
+
+        Returns:
+            list: news, length is same as the queries
+        """
+        BASE_URL = "https://minkabu.jp"
+
+        news_list = list()
+        for query in queries:
+            news = dict()
+            url = BASE_URL + query['href']
+            response = requests.get(url, headers=headers)
+            soup = BeautifulSoup(response.content, "html.parser")
+
+            title = soup.select("div[class='md_index_article fsize_l']")[
+                0].get_text('\n').strip()
+            publish_time = soup.select("div[class='flr']")[
+                0].get_text('\n').strip()[3:]
+            article = soup.select("div[class='md_box fsize_m md_normalize']")[
+                0].get_text('\n').strip()
+
+            news['id'] = query['id']
+            news['url'] = url
+            news['title'] = title
+            news['publish_time'] = publish_time
+            news['article'] = article
+
+            news_list.append(news)
+
+            time.sleep(sleep)
+
+        return news_list

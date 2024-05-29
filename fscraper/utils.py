@@ -1,6 +1,6 @@
-import pandas as pd
 import numpy as np
-from .yfscraper import YahooFinanceScraper
+import pandas as pd
+from datetime import datetime
 
 
 def calculate_pearson_correlation(price1: pd.Series, price2: pd.Series):
@@ -21,35 +21,35 @@ def calculate_pearson_correlation(price1: pd.Series, price2: pd.Series):
     return np.corrcoef(x, y)[1, 0]
 
 
-def calculate_beta(code: str, market: str = '^N225', period: str = '1y'):
+def calculate_beta(stock, index, start='1985-01-01', end=datetime.now().strftime('%Y-%m-%d')):
     """Calculate the 'beta' with the given ticker code with the specific period using Yahoo Finance API.
 
     Args:
-        code(str): ticker symbol(e.g. '7203.T')
-        period(str): beta of period (e.g. '1d', '1mo'...)
+        stock(pd.Series): stock value
+        index(pd.Series): benchmark index('Nikkei 225': '^N225', 'S&P 500': '^SPX')
+        start(str): start time period(format: 'yyyy-mm-dd')
+        end(str): end time period(format: 'yyyy-mm-dd')
 
     Returns:
         float64: beta
 
     Usage:
-        `beta = calculate_beta('6753.T', '1y')`
+        `beta = calculate_beta(stock, index, '2020-01-01', '2024-01-01')`
     """
-    stock1 = YahooFinanceScraper(code)
-    stock2 = YahooFinanceScraper(market)
-
-    df1 = stock1.get_stock_price(period, '1d')
-    df2 = stock2.get_stock_price(period, '1d')
-
-    df = pd.concat([df1['close'], df2['close']], axis=1,
-                   join='outer', keys=[code, market])
-
     # Daily returns (percentage returns[`df.pct_change()`] or log returns[`np.log(df/df.shift(1))`])
-    daily_returns = df.pct_change()
+    stock_returns = stock.pct_change()
+    index_returns = index.pct_change()
 
-    cov = daily_returns.cov()[market][code]
-    var = daily_returns.var()[market]
+    df = pd.concat([stock_returns, index_returns], axis=1,
+                   join='outer', keys=['Stock Returns', 'Index Returns'])
 
-    daily_returns = daily_returns.dropna()
+    df = df.loc[(df.index > start) & (df.index < end)].dropna()
+
+    cov_matrix = df.cov()
+
+    cov = cov_matrix.loc['Stock Returns', 'Index Returns']
+    var = cov_matrix.loc['Index Returns', 'Index Returns']
+
     return cov/var
 
 
@@ -142,11 +142,6 @@ def calculate_bollinger_bands(close: pd.Series, smooth_period: int = 20, standar
 def calculate_macd(close: pd.Series, short_periods: int = 12, long_periods: int = 26, signal_periods: int = 9):
     """Calculate MACD(Moving Average Convergence/Divergence) using 'close' price.
 
-    Note:
-        * MACD Line > Signal Line -> Buy
-        * MACD Line < Signal Line -> Sell
-        * 'macd_histogram' around 0 indicates a change in trend may occur.
-
     Args:
         close(pd.Series): close price
         short_periods(int): the short-term exponential moving averages (EMAs)
@@ -157,6 +152,11 @@ def calculate_macd(close: pd.Series, short_periods: int = 12, long_periods: int 
         pd.Series: macd 
         pd.Series: macd signal
         pd.Series: macd histogram
+
+    Note:
+        * MACD Line > Signal Line -> Buy
+        * MACD Line < Signal Line -> Sell
+        * 'macd_histogram' around 0 indicates a change in trend may occur.
     """
     # Get the 12-day EMA of the closing price
     short_ema = close.ewm(span=short_periods, adjust=False,
@@ -178,8 +178,8 @@ def calculate_macd(close: pd.Series, short_periods: int = 12, long_periods: int 
     return macd, macd_signal, macd_histogram
 
 
-def set_x_days_high_low(high: pd.Series, low: pd.Series, window: int):
-    """Set x days high/low price.
+def get_x_days_high_low(high: pd.Series, low: pd.Series, window: int):
+    """Get x days high/low price.
 
     Args:
         high(pd.Series): high price
@@ -191,7 +191,7 @@ def set_x_days_high_low(high: pd.Series, low: pd.Series, window: int):
         pd.Series: lowest price for the window
 
     Usage:
-        `df['3-day-high'], df['3-day-low'] = set_x_days_high_low(df['high'], df['low'], window=3)`
+        `df['3-day-high'], df['3-day-low'] = get_x_days_high_low(df['high'], df['low'], window=3)`
     """
     return high.rolling(window=window).max(), low.rolling(window=window).min()
 
