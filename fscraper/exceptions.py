@@ -19,3 +19,7 @@ class InvalidFinancialReportType(Exception):
     def __init__(self, report_type):
         self.message = f"Valid report types are 'quarterly' and 'annual', but {report_type} received."
 
+class DelistedCode(Exception):
+
+    def __init__(self, code):
+        self.message = f"Invalid data, the code {code} may have been delisted."

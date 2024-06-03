@@ -1,8 +1,10 @@
 import time
 import unittest
 import fscraper as fs
-from fscraper.exceptions import CodeNotFound
-
+from fscraper.exceptions import (
+    CodeNotFound,
+    DelistedCode
+)
 
 class TestMethods(unittest.TestCase):
 
@@ -44,6 +46,11 @@ class TestMethods(unittest.TestCase):
         df = yf.get_financials('balancesheet', 'annual')
         self.assertGreater(len(df), 0)
 
+
+    def test_minutes_price(self):
+        with self.assertRaises(DelistedCode):
+            kt = fs.KabutanScraper('2412.T')
+            kt.get_stock_price_by_minutes()
 
 if __name__ == '__main__':
     unittest.main()

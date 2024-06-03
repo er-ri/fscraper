@@ -10,11 +10,12 @@ class KabuyohoScraper(object):
     def __init__(self, bcode):
         self.__bcode = bcode.replace('.T', '')
 
-    def get_target_price(self):
+    def get_target_price(self) -> pd.DataFrame:
         """Get theory PB/R and PE/R market price from sbisec API.("https://img-sec.ifis.co.jp")
 
         Returns: 
-            pd.DataFrame: target price
+            Dataframe including target price
+
         """
         # `Request` without `Referer`` paramter will be blocked by the website.
         scraper_headers = {

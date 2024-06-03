@@ -1,3 +1,5 @@
+# fscraper/__init__.py
+
 from .yfscraper import YahooFinanceScraper
 from .kabuyohoscraper import KabuyohoScraper
 from .kabutanscraper import KabutanScraper

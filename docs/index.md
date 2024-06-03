@@ -1,5 +1,5 @@
 # Financial Data Scraper
-The project contains a collection of functions used to scrape financial data, together with financial indicators calculator such as *RSI*, *beta*, *MACD*, etc.
+A collection of functions used to scrape financial data, together with financial indicators calculator such as *RSI*, *beta*, *MACD*, etc.
 
 ## Getting Started
 * Install the package
@@ -41,40 +41,15 @@ news_list = ms.get_news_contents(queries)
 ```
 
 ## Yahoo! Finance
-- Get the stock price
+- Get the stock price   
 ```python
 yfs = fs.YahooFinanceScraper('7203.T')
 df = yfs.get_stock_price(period='10y', interval='1d')
 df = yfs.get_stock_price2(start='2010-01-01', end='2020-12-12')
 ```
 
-## Financial Indicator
-```python
-# RSI
-df['rsi'] = fs.calculate_rsi(df['close'])
-df['rsi'] = fs.calculate_rsi(df['close'], periods=14)
 
-# Stochastic Oscillator Index
-df['%K'], df['%D'] = fs.calculate_stochastic_oscillator(df['high'], df['low'], df['close'])
-df['%K'], df['%D'] = fs.calculate_stochastic_oscillator(df['high'], df['low'], df['close'], k_period=14, d_period=3)
+!!! note "Title"
 
-# Bollinger Band
-df['top'], df['bottom'] = fs.calculate_bollinger_bands(df['close'])
-df['top'], df['bottom'] = fs.calculate_bollinger_bands(df['close'], smooth_period=20, standard_deviation=2)
+    Some note
 
-# MACD(Moving Average Convergence/Divergence)
-df['macd'], df['macd_signal'], df['macd_histogram'] = fs.calculate_macd(df['close'])
-df['macd'], df['macd_signal'], df['macd_histogram'] = fs.calculate_macd(df['close'], short_periods=12, long_periods=26, signal_periods=9)
-
-# Pearson Correlation
-cor = fs.calculate_pearson_correlation(df1['close'], df2['close'])
-
-# beta with Nikkei 225
-beta = fs.calculate_beta(code='6753.T', market='^N225', period='1y')
-
-# 100 days min&max price
-df['100-high'], df['100-low'] = fs.set_x_days_high_low(df['high'], df['low'], window=100)
-
-# On Balance Volume (OBV)
-df['OBV'] = fs.calculate_obv(df['close'], df['volume'])
-```

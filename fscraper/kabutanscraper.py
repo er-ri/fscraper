@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 from io import StringIO
+from .exceptions import DelistedCode
 
 headers = {
         'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0',
@@ -10,14 +11,33 @@ headers = {
     }
 
 class KabutanScraper(object):
+    """Scraper for Kabutan(株探)
+    """
 
-    def __init__(self, code):
+    def __init__(self, code: str):
         self.code = code.upper().replace('.T', '')
 
-    def get_stock_price_by_minutes(self):
-        """Get stock price by minute"""
+    def get_stock_price_by_minutes(self) -> pd.DataFrame:
+        """Get stock price by minute
+        
+        Returns:
+            stock price in minutes
+
+        Raises:
+            DelistedCode: if the code has been delisted.
+        Example:
+        
+            >>> kt = fs.KabutanScraper('7203.T)
+            >>> df = kt.get_stock_price_by_minutes()
+            
+        """
         url = "https://kabutan.jp/stock/read?c={}&m=4&k=1&{}=".format(self.code, int(time.time() * 1000))
-        html = requests.get(url=url, headers=headers).text
+        response = requests.get(url=url, headers=headers)
+        html = response.text
+
+        if len(html) < 10:
+            raise DelistedCode(code=self.code) 
+        
         csvStringIO = StringIO(html)
         df = pd.read_csv(csvStringIO, sep=",", header=None)
         

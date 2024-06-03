@@ -1,40 +1,52 @@
+# fscraper/utils.py
+
+"""*Provide several functions for calculating Technical Indicators.*
+"""
+
 import numpy as np
 import pandas as pd
 from datetime import datetime
 
 
-def calculate_pearson_correlation(price1: pd.Series, price2: pd.Series):
+def calculate_pearson_correlation(price1: pd.Series, price2: pd.Series) -> np.float64:
     """Calculate the Pearson Correlation with the two given prices.
 
     Args:
-        price1(pd.Series): the first price for calculation
-        price2(pd.Series): the second price for calculation
+        price1: the first price for calculation
+        price2: the second price for calculation
 
     Returns:
-        float64: correlation 
+        pearson correlation 
 
-    Usage:
-        `cor = calculate_pearson_correlation(df1['close'], df2['close'])`
+    Example:
+
+        >>> cor = calculate_pearson_correlation(df1['close'], df2['close'])
+
     """
     x = price1.to_numpy()
     y = price2.to_numpy()
     return np.corrcoef(x, y)[1, 0]
 
 
-def calculate_beta(stock, index, start='1985-01-01', end=datetime.now().strftime('%Y-%m-%d')):
+def calculate_beta(stock: pd.Series, 
+                   index: pd.Series, 
+                   start: str='1985-01-01', 
+                   end: str=datetime.now().strftime('%Y-%m-%d')) -> np.float64:
     """Calculate the 'beta' with the given ticker code with the specific period using Yahoo Finance API.
 
     Args:
-        stock(pd.Series): stock value
-        index(pd.Series): benchmark index('Nikkei 225': '^N225', 'S&P 500': '^SPX')
-        start(str): start time period(format: 'yyyy-mm-dd')
-        end(str): end time period(format: 'yyyy-mm-dd')
+        stock: stock value
+        index: benchmark index('Nikkei 225': `^N225`, 'S&P 500': `^SPX`)
+        start: start time period(format: `yyyy-mm-dd`)
+        end: end time period(format: `yyyy-mm-dd`)
 
     Returns:
-        float64: beta
+        beta
 
-    Usage:
-        `beta = calculate_beta(stock, index, '2020-01-01', '2024-01-01')`
+    Example:
+    
+        >>> beta = calculate_beta(stock, index, '2020-01-01', '2024-01-01')
+
     """
     # Daily returns (percentage returns[`df.pct_change()`] or log returns[`np.log(df/df.shift(1))`])
     stock_returns = stock.pct_change()
@@ -53,17 +65,19 @@ def calculate_beta(stock, index, start='1985-01-01', end=datetime.now().strftime
     return cov/var
 
 
-def calculate_rsi(price: pd.Series, periods: int = 14):
+def calculate_rsi(price: pd.Series, periods: int = 14) -> pd.DataFrame:
     """Calculate RSI(Relative Strength Index) for the given price.
+
+    Args:
+        price: stock price
+        periods: The default time period, values bounded from 0 to 100
+
+    Returns:
+        rsi for the data
 
     Note:
         * Greater than 80: overbought, less than 20: oversold. 
 
-    Args:
-        price(pd.Series): stock price
-
-    Returns:
-        pd.Series: rsi for the date
     """
     # Get up&down moves
     price_delta = price.diff(1)
@@ -83,22 +97,27 @@ def calculate_rsi(price: pd.Series, periods: int = 14):
     return rsi
 
 
-def calculate_stochastic_oscillator(high: pd.Series, low: pd.Series, close: pd.Series, k_period: int = 14, d_period: int = 3):
+def calculate_stochastic_oscillator(high: pd.Series, 
+                                    low: pd.Series, 
+                                    close: pd.Series, 
+                                    k_period: int = 14, 
+                                    d_period: int = 3)->pd.DataFrame:
     """Calculate Stochastic Oscillator Index('%K' and '%D') for the given price(Dataframe)
 
+    Args:
+        high: stock high price
+        low: stock low price
+        k_period: fast stochastic indicator
+        d_period: slow stochastic indicator
+
+    Returns:
+        Input dataframe with 2 more columns'%K' and '%D'
+    
     Note:
         * 80: overbought, 20: oversold
         * '%K' crossing below '%D': sell
         * '%K' crossing above '%D': buy
 
-    Args:
-        high(pd.Series): stock high price
-        low(pd.Series): stock low price
-        k_period(int): fast stochastic indicator
-        d_period(int): slow stochastic indicator
-
-    Returns:
-        pd.Dataframe: input dataframe with 2 more columns'%K' and '%D'
     """
     # Maximum value of previous 14 periods
     k_high = high.rolling(k_period).max()
@@ -113,22 +132,23 @@ def calculate_stochastic_oscillator(high: pd.Series, low: pd.Series, close: pd.S
     return fast, slow
 
 
-def calculate_bollinger_bands(close: pd.Series, smooth_period: int = 20, standard_deviation: int = 2):
+def calculate_bollinger_bands(close: pd.Series, smooth_period: int = 20, standard_deviation: int = 2) -> pd.DataFrame:
     """Calculate Bollinger Band for the given stock price.
+
+    Args:
+        close: close price
+        smooth_period: simple moving average(SMA) period
+        standard_deviation: standard deviation over last n period
+
+    Returns:
+        Input dataframe with 2 more columns 'top' and 'bottom'
 
     Note:
         * Breakouts provide no clue as to the direction and extent of future price movement. 
         * 65% : standard_deviation = 1
         * 95% : standard_deviation = 2
-        * 99% : standard_deviation = 3   
+        * 99% : standard_deviation = 3
 
-    Args:
-        close(pd.Series): close price
-        smooth_period(int): simple moving average(SMA) period
-        standard_deviation(int): standard deviation over last n period
-
-    Returns:
-        pd.Dataframe: input dataframe with 2 more columns 'top' and 'bottom'
     """
     sma = close.rolling(smooth_period).mean()
     std = close.rolling(smooth_period).std()
@@ -139,24 +159,25 @@ def calculate_bollinger_bands(close: pd.Series, smooth_period: int = 20, standar
     return top, bottom
 
 
-def calculate_macd(close: pd.Series, short_periods: int = 12, long_periods: int = 26, signal_periods: int = 9):
+def calculate_macd(close: pd.Series, short_periods: int = 12, long_periods: int = 26, signal_periods: int = 9) -> tuple:
     """Calculate MACD(Moving Average Convergence/Divergence) using 'close' price.
 
     Args:
-        close(pd.Series): close price
-        short_periods(int): the short-term exponential moving averages (EMAs)
-        long_periods(int): the long-term exponential moving averages (EMAs)
-        signal_periods(int): n-period EMA of the MACD line
+        close: close price
+        short_periods: the short-term exponential moving averages (EMAs)
+        long_periods: the long-term exponential moving averages (EMAs)
+        signal_periods: n-period EMA of the MACD line
 
     Returns:
-        pd.Series: macd 
-        pd.Series: macd signal
-        pd.Series: macd histogram
+        macd: pd.Series
+        macd signal: pd.Series
+        macd histogram: pd.Series
 
     Note:
         * MACD Line > Signal Line -> Buy
         * MACD Line < Signal Line -> Sell
         * 'macd_histogram' around 0 indicates a change in trend may occur.
+
     """
     # Get the 12-day EMA of the closing price
     short_ema = close.ewm(span=short_periods, adjust=False,
@@ -178,35 +199,39 @@ def calculate_macd(close: pd.Series, short_periods: int = 12, long_periods: int 
     return macd, macd_signal, macd_histogram
 
 
-def get_x_days_high_low(high: pd.Series, low: pd.Series, window: int):
+def get_x_days_high_low(high: pd.Series, low: pd.Series, window: int) -> tuple:
     """Get x days high/low price.
 
     Args:
-        high(pd.Series): high price
-        low(pd.Series): low price
-        window(int): window length for high and low price
+        high: high price
+        low: low price
+        window: window length for high and low price
 
     Returns:
-        pd.Series: highest price for the window
-        pd.Series: lowest price for the window
+        highest price for the window
+        lowest price for the window
 
-    Usage:
-        `df['3-day-high'], df['3-day-low'] = get_x_days_high_low(df['high'], df['low'], window=3)`
+    Example:
+
+        >>> df['3-day-high'], df['3-day-low'] = get_x_days_high_low(df['high'], df['low'], window=3)
+
     """
     return high.rolling(window=window).max(), low.rolling(window=window).min()
 
 
-def calculate_obv(close: pd.Series, volume: pd.Series):
+def calculate_obv(close: pd.Series, volume: pd.Series) -> pd.Series:
     """On Balance Volume (OBV)
 
     Args:
-        close(pd.Series): close price
-        volume(pd.Series): day's volume
+        close: close price
+        volume: day's volume
 
     Returns:
-        pd.Series: OBV
+        OBV
 
-    Usage:
-        `df['OBV'] = fs.calculate_obv(df['close'], df['volume'])`
+    Example:
+        
+        >>> df['OBV'] = fs.calculate_obv(df['close'], df['volume'])
+
     """
     return (np.sign(close.diff()) * volume).fillna(0).cumsum()
