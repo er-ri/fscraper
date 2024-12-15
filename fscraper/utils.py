@@ -9,19 +9,20 @@ from datetime import datetime
 
 
 def calculate_pearson_correlation(price1: pd.Series, price2: pd.Series) -> np.float64:
-    """Calculate the Pearson Correlation with the two given prices.
+    """Calculate the Pearson Correlation between two given price series.
 
     Args:
-        price1: the first price for calculation
-        price2: the second price for calculation
+        price1 (pd.Series): The first price series for calculation.
+        price2 (pd.Series): The second price series for calculation.
 
     Returns:
-        pearson correlation 
+        np.float64: The Pearson correlation coefficient.
+
+    Raises:
+        ValueError: If the input series are not of the same length or if they contain NaN values.
 
     Example:
-
         >>> cor = calculate_pearson_correlation(df1['close'], df2['close'])
-
     """
     x = price1.to_numpy()
     y = price2.to_numpy()
@@ -32,21 +33,22 @@ def calculate_beta(stock: pd.Series,
                    index: pd.Series, 
                    start: str='1985-01-01', 
                    end: str=datetime.now().strftime('%Y-%m-%d')) -> np.float64:
-    """Calculate the 'beta' with the given ticker code with the specific period using Yahoo Finance API.
+    """Calculate the beta of a stock relative to a benchmark index over a specified period.
 
     Args:
-        stock: stock value
-        index: benchmark index('Nikkei 225': `^N225`, 'S&P 500': `^SPX`)
-        start: start time period(format: `yyyy-mm-dd`)
-        end: end time period(format: `yyyy-mm-dd`)
+        stock (pd.Series): Time series of stock prices.
+        index (pd.Series): Time series of benchmark index prices (e.g., 'Nikkei 225': `^N225`, 'S&P 500': `^SPX`).
+        start (str): Start date of the period in 'yyyy-mm-dd' format. Defaults to '1985-01-01'.
+        end (str): End date of the period in 'yyyy-mm-dd' format. Defaults to today's date.
 
     Returns:
-        beta
+        np.float64: The calculated beta value.
+
+    Raises:
+        ValueError: If the input series are empty or if the dates are invalid.
 
     Example:
-    
         >>> beta = calculate_beta(stock, index, '2020-01-01', '2024-01-01')
-
     """
     # Daily returns (percentage returns[`df.pct_change()`] or log returns[`np.log(df/df.shift(1))`])
     stock_returns = stock.pct_change()
@@ -66,18 +68,19 @@ def calculate_beta(stock: pd.Series,
 
 
 def calculate_rsi(price: pd.Series, periods: int = 14) -> pd.DataFrame:
-    """Calculate RSI(Relative Strength Index) for the given price.
+    """Calculate the Relative Strength Index (RSI) for the given price data.
 
     Args:
-        price: stock price
-        periods: The default time period, values bounded from 0 to 100
+        price (pd.Series): A Pandas Series representing stock prices.
+        periods (int, optional): The number of periods to use for the RSI calculation. 
+            Defaults to 14. Values should be bounded from 0 to 100.
 
     Returns:
-        rsi for the data
+        pd.DataFrame: A DataFrame containing the RSI values.
 
     Note:
-        * Greater than 80: overbought, less than 20: oversold. 
-
+        * RSI values greater than 80 indicate an overbought condition.
+        * RSI values less than 20 indicate an oversold condition.
     """
     # Get up&down moves
     price_delta = price.diff(1)
@@ -102,22 +105,22 @@ def calculate_stochastic_oscillator(high: pd.Series,
                                     close: pd.Series, 
                                     k_period: int = 14, 
                                     d_period: int = 3)->pd.DataFrame:
-    """Calculate Stochastic Oscillator Index('%K' and '%D') for the given price(Dataframe)
+    """Calculate Stochastic Oscillator Index('%K' and '%D') for the given price data.
 
     Args:
-        high: stock high price
-        low: stock low price
-        k_period: fast stochastic indicator
-        d_period: slow stochastic indicator
+        high (pd.Series): Series of stock high prices.
+        low (pd.Series): Series of stock low prices.
+        close (pd.Series): Series of stock closing prices.
+        k_period (int, optional): Period for the fast stochastic indicator. Defaults to 14.
+        d_period (int, optional): Period for the slow stochastic indicator. Defaults to 3.
 
     Returns:
-        Input dataframe with 2 more columns'%K' and '%D'
+        pd.DataFrame: DataFrame with additional columns '%K' and '%D'.
     
     Note:
         * 80: overbought, 20: oversold
-        * '%K' crossing below '%D': sell
-        * '%K' crossing above '%D': buy
-
+        * '%K' crossing below '%D': sell signal
+        * '%K' crossing above '%D': buy signal
     """
     # Maximum value of previous 14 periods
     k_high = high.rolling(k_period).max()
@@ -133,22 +136,22 @@ def calculate_stochastic_oscillator(high: pd.Series,
 
 
 def calculate_bollinger_bands(close: pd.Series, smooth_period: int = 20, standard_deviation: int = 2) -> pd.DataFrame:
-    """Calculate Bollinger Band for the given stock price.
+    """Calculate Bollinger Bands for the given stock price series.
 
     Args:
-        close: close price
-        smooth_period: simple moving average(SMA) period
-        standard_deviation: standard deviation over last n period
+        close (pd.Series): A Pandas Series representing the closing prices of a stock.
+        smooth_period (int, optional): The period over which to calculate the simple moving average (SMA). Defaults to 20.
+        standard_deviation (int, optional): The number of standard deviations to use for the bands. Defaults to 2.
 
     Returns:
-        Input dataframe with 2 more columns 'top' and 'bottom'
+        pd.DataFrame: A DataFrame containing the original closing prices along with two additional columns:
+                      'top' for the upper Bollinger Band and 'bottom' for the lower Bollinger Band.
 
     Note:
-        * Breakouts provide no clue as to the direction and extent of future price movement. 
+        * Breakouts provide no clue as to the direction and extent of future price movement.
         * 65% : standard_deviation = 1
         * 95% : standard_deviation = 2
         * 99% : standard_deviation = 3
-
     """
     sma = close.rolling(smooth_period).mean()
     std = close.rolling(smooth_period).std()
@@ -160,24 +163,24 @@ def calculate_bollinger_bands(close: pd.Series, smooth_period: int = 20, standar
 
 
 def calculate_macd(close: pd.Series, short_periods: int = 12, long_periods: int = 26, signal_periods: int = 9) -> tuple:
-    """Calculate MACD(Moving Average Convergence/Divergence) using 'close' price.
+    """Calculate the Moving Average Convergence/Divergence (MACD) for a given series of closing prices.
 
     Args:
-        close: close price
-        short_periods: the short-term exponential moving averages (EMAs)
-        long_periods: the long-term exponential moving averages (EMAs)
-        signal_periods: n-period EMA of the MACD line
+        close (pd.Series): Series of closing prices.
+        short_periods (int, optional): Number of periods for the short-term EMA. Defaults to 12.
+        long_periods (int, optional): Number of periods for the long-term EMA. Defaults to 26.
+        signal_periods (int, optional): Number of periods for the signal line EMA. Defaults to 9.
 
     Returns:
-        macd: pd.Series
-        macd signal: pd.Series
-        macd histogram: pd.Series
+        tuple: A tuple containing three pd.Series:
+            - macd: The MACD line.
+            - macd_signal: The signal line.
+            - macd_histogram: The MACD histogram.
 
-    Note:
-        * MACD Line > Signal Line -> Buy
-        * MACD Line < Signal Line -> Sell
-        * 'macd_histogram' around 0 indicates a change in trend may occur.
-
+    Notes:
+        - When the MACD line crosses above the signal line, it may indicate a buy signal.
+        - When the MACD line crosses below the signal line, it may indicate a sell signal.
+        - A MACD histogram value around zero suggests a potential change in trend.
     """
     # Get the 12-day EMA of the closing price
     short_ema = close.ewm(span=short_periods, adjust=False,
@@ -203,35 +206,33 @@ def get_x_days_high_low(high: pd.Series, low: pd.Series, window: int) -> tuple:
     """Get x days high/low price.
 
     Args:
-        high: high price
-        low: low price
-        window: window length for high and low price
+        high (pd.Series): High prices.
+        low (pd.Series): Low prices.
+        window (int): Window length for calculating high and low prices.
 
     Returns:
-        highest price for the window
-        lowest price for the window
+        tuple[pd.Series, pd.Series]: A tuple containing the highest and lowest prices for the given window.
 
     Example:
-
         >>> df['3-day-high'], df['3-day-low'] = get_x_days_high_low(df['high'], df['low'], window=3)
-
     """
     return high.rolling(window=window).max(), low.rolling(window=window).min()
 
 
 def calculate_obv(close: pd.Series, volume: pd.Series) -> pd.Series:
-    """On Balance Volume (OBV)
+    """Calculates the On Balance Volume (OBV).
 
     Args:
-        close: close price
-        volume: day's volume
+        close (pd.Series): A pandas Series representing the closing prices.
+        volume (pd.Series): A pandas Series representing the day's volume.
 
     Returns:
-        OBV
+        pd.Series: A pandas Series containing the calculated OBV values.
+
+    Raises:
+        ValueError: If the input series do not have the same length.
 
     Example:
-        
-        >>> df['OBV'] = fs.calculate_obv(df['close'], df['volume'])
-
+        >>> df['OBV'] = calculate_obv(df['close'], df['volume'])
     """
     return (np.sign(close.diff()) * volume).fillna(0).cumsum()

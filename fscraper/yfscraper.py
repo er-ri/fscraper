@@ -1,4 +1,5 @@
 import json
+import pytz
 import requests
 import pandas as pd
 import numpy as np
@@ -26,15 +27,16 @@ class YahooFinanceScraper(object):
         self._statistics_dom = None
 
 
-    def get_financials(self, report, report_type):
-        """Scrape Yahoo!Finance financial report
+    def get_financials(self, report, report_type) -> pd.DataFrame:
+        """Scrape Yahoo! Finance financial report.
 
         Args:
-            report(str): 'incomestatement' | 'balancesheet' | 'cashflow'
-            quarterly(): 'quarterly' | 'annual'
+            report (str): Type of report to scrape. Options are 'incomestatement', 
+                        'balancesheet', or 'cashflow'.
+            report_type (str): Frequency of the report. Options are 'quarterly' or 'annual'.
 
         Returns:
-            pd.DataFrame: corresponding report
+            pd.DataFrame: DataFrame containing the requested financial report.
         """
         # Accepted arguments check
         if report not in REPORT_TABLE.keys():
@@ -78,17 +80,23 @@ class YahooFinanceScraper(object):
             df[item]=values
         
         df = df.set_index('date').transpose()
+        
         return df
 
-    def get_stock_price(self, period='1mo', interval='1d'):
-        """Get historical price 
+    def get_stock_price(self, period='1mo', interval='1d') -> pd.DataFrame:
+        """Get historical stock price data.
 
         Args:
-            period(str): `1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max`
-            interval(str): `1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo`
+            period (str): Duration of the historical data to retrieve. 
+                Options include '1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max'.
+            interval (str): Frequency of the data points. 
+                Options include '1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo'.
 
         Returns:
-            pd.DataFrame: stock price
+            pd.DataFrame: A DataFrame containing the historical stock prices with columns such as 'open', 'high', 'low', 'close', 'volume', etc.
+        
+        Raises:
+            ValueError: If an invalid period or interval is provided.
         """
         params = dict()
         params['range'] = period
@@ -99,16 +107,16 @@ class YahooFinanceScraper(object):
 
         return df
 
-    def get_stock_price2(self, start='', end = datetime.now().strftime('%Y-%m-%d'), interval='1d'):
-        """Get history price with the specified date. 
+    def get_stock_price2(self, start='', end = datetime.now().strftime('%Y-%m-%d'), interval='1d') -> pd.DataFrame:
+        """Get history price with the specified date.
 
         Args:
-            start(str): start date, format `yyyy-mm-dd`
-            end(str): end date, format `yyyy-mm-dd`
-            interval(str): `1m,2m,5m,15m,30m,60m,90m,1h,1d,5d,1wk,1mo,3mo`
+            start (str): Start date, format `yyyy-mm-dd`.
+            end (str): End date, format `yyyy-mm-dd`. Defaults to today's date.
+            interval (str): Interval options include `1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo`.
 
         Returns:
-            pd.DataFrame: stock price
+            pd.DataFrame: DataFrame containing the stock price history.
         """
         params = dict()
         params['period1'] = int(datetime.strptime(
@@ -150,8 +158,11 @@ class YahooFinanceScraper(object):
         except KeyError:
             df['dividends'] = np.nan
 
+        # Define the timezone for Asia/Tokyo
+        tokyo_tz = pytz.timezone('Asia/Tokyo')
+
         df['date'] = df['date'].apply(lambda d: datetime.fromtimestamp(
-            int(d)).strftime("%Y-%m-%d %H:%M:%S"))
+            int(d), tz=tokyo_tz).strftime("%Y-%m-%d %H:%M:%S"))
         df = df.set_index('date')
 
         return df
